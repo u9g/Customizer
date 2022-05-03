@@ -2,6 +2,7 @@ package dev.u9g.customizer;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
 import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
+import com.google.common.reflect.TypeToken;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,6 +23,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +31,26 @@ import java.util.function.Consumer;
 
 public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implements Listener {
     protected final Map<String, CustomizedCustomItem> itemsMap = new HashMap<>();
+
+    public CustomItemRegistry(Plugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+        List<CustomizedCustomItem> items = new ArrayList<>();
+        try {
+            for (var clazz : Util.getExtendingClasses(plugin, new TypeToken<CustomizedCustomItem>() {}.getRawType())) {
+                CustomizedCustomItem item = (CustomizedCustomItem) clazz.getConstructor().newInstance();
+                items.add(item);
+            }
+        } catch (ReflectiveOperationException ignored) {}
+        init((CustomizedCustomItem[]) items.toArray());
+    }
+
     @SafeVarargs
     public CustomItemRegistry(Plugin plugin, CustomizedCustomItem... items) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
+        init(items);
+    }
+
+    private void init(CustomizedCustomItem[] items) {
         for (CustomizedCustomItem item : items) {
             itemsMap.put(item.name(), item);
             if (item.recipe() != null) {
