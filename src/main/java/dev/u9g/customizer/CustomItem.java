@@ -25,5 +25,5 @@ public interface CustomItem {
     default void onWalkOnNewBlockWhileWearing(PlayerMoveEvent e) {}
     default void onJumpWhileWearing(PlayerJumpEvent e) {}
     default void onToggleSneakWhileWearing(PlayerToggleSneakEvent e) {}
-    default void onReleaseItem(PlayerReleaseUsingItem e) {}
+//    default void onReleaseItem(PlayerReleaseUsingItem e) {}
 }
