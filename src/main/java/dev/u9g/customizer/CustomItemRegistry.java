@@ -51,13 +51,6 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
         callOnItemClass(e.getItemInHand(), c -> c.onPlace(e));
     }
 
-//    @EventHandler
-//    public void onPlace(PlayerReleaseUsingItem e) {
-//        var customItemClass = getItemClass(e.getItem());
-//        if (customItemClass == null) return;
-//        customItemClass.onReleaseItem(e);
-//    }
-
     @EventHandler
     public void onAttack(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player p) {

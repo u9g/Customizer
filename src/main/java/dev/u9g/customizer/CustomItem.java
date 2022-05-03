@@ -1,7 +1,6 @@
 package dev.u9g.customizer;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
-import com.dragoncommissions.events.PlayerReleaseUsingItem;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -25,5 +24,4 @@ public interface CustomItem {
     default void onWalkOnNewBlockWhileWearing(PlayerMoveEvent e) {}
     default void onJumpWhileWearing(PlayerJumpEvent e) {}
     default void onToggleSneakWhileWearing(PlayerToggleSneakEvent e) {}
-//    default void onReleaseItem(PlayerReleaseUsingItem e) {}
 }
