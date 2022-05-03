@@ -52,7 +52,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'dev.u9g'
             artifactId = rootProject.name
-            version = version
+            version = "14-SNAPSHOT"
             from components.java
         }
     }

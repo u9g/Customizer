@@ -23,10 +23,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implements Listener {
@@ -36,21 +33,14 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
         Bukkit.getPluginManager().registerEvents(this, plugin);
         List<CustomizedCustomItem> items = new ArrayList<>();
         try {
-            for (var clazz : Util.getExtendingClasses(plugin, new TypeToken<CustomizedCustomItem>() {}.getRawType())) {
-                CustomizedCustomItem item = (CustomizedCustomItem) clazz.getConstructor().newInstance();
-                items.add(item);
+            for (var clazz : Util.getExtendingClasses(plugin, new TypeToken<CustomizedCustomItem>(getClass()) {}.getRawType())) {
+                items.add((CustomizedCustomItem) clazz.getConstructor().newInstance());
             }
         } catch (ReflectiveOperationException ignored) {}
-        init((CustomizedCustomItem[]) items.toArray());
-    }
-
-    @SafeVarargs
-    public CustomItemRegistry(Plugin plugin, CustomizedCustomItem... items) {
-        Bukkit.getPluginManager().registerEvents(this, plugin);
         init(items);
     }
 
-    private void init(CustomizedCustomItem[] items) {
+    private void init(List<CustomizedCustomItem> items) {
         for (CustomizedCustomItem item : items) {
             itemsMap.put(item.name(), item);
             if (item.recipe() != null) {
@@ -60,18 +50,18 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
     }
 
     @EventHandler
-    private void onRightClick(PlayerInteractEvent e) {
+    public void onRightClick(PlayerInteractEvent e) {
         if (!e.getAction().isRightClick()) return;
         callOnItemClass(e.getItem(), c -> c.onRightClick(e));
     }
 
     @EventHandler
-    private void onPlace(BlockPlaceEvent e) {
+    public void onPlace(BlockPlaceEvent e) {
         callOnItemClass(e.getItemInHand(), c -> c.onPlace(e));
     }
 
     @EventHandler
-    private void onAttack(EntityDamageEvent e) {
+    public void onAttack(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player p) {
             callOnItemClass(p.getEquipment(), c -> c.onTakeDamage(e));
         }
@@ -79,7 +69,7 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
 
     // allows for projectile hit event to register the entity
     @EventHandler
-    private void onPlayerLaunchProjectile(PlayerLaunchProjectileEvent e) {
+    public void onPlayerLaunchProjectile(PlayerLaunchProjectileEvent e) {
         String customItemName = e.getItemStack().getItemMeta().getPersistentDataContainer().get(CustomItemConstants.CUSTOM_ITEM_TYPE, PersistentDataType.STRING);
         if (customItemName == null) return;
         var customItemClass = itemsMap.get(customItemName);
@@ -88,31 +78,31 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
     }
 
     @EventHandler
-    private void onProjectileHit(ProjectileHitEvent e) {
+    public void onProjectileHit(ProjectileHitEvent e) {
         callOnItemClass(e.getEntity(), c -> c.onProjectileHitObject(e));
     }
 
     @EventHandler
-    private void onEntityHurt(EntityDamageByEntityEvent e) {
+    public void onEntityHurt(EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof Player player) {
             callOnItemClass(player.getEquipment().getItemInMainHand(), c-> c.onAttack(e));
         }
     }
 
     @EventHandler
-    private void onMove(PlayerMoveEvent e) {
+    public void onMove(PlayerMoveEvent e) {
         if (e.hasChangedBlock()) {
             callOnItemClass(e.getPlayer().getEquipment(), c -> c.onWalkOnNewBlockWhileWearing(e));
         }
     }
 
     @EventHandler
-    private void onJump(PlayerJumpEvent e) {
+    public void onJump(PlayerJumpEvent e) {
         callOnItemClass(e.getPlayer().getEquipment(), c -> c.onJumpWhileWearing(e));
     }
 
     @EventHandler
-    private void onSneak(PlayerToggleSneakEvent e) {
+    public void onSneak(PlayerToggleSneakEvent e) {
         callOnItemClass(e.getPlayer().getEquipment(), c -> c.onToggleSneakWhileWearing(e));
     }
 
