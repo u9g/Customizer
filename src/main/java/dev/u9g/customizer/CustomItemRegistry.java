@@ -41,18 +41,18 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
     }
 
     @EventHandler
-    public void onRightClick(PlayerInteractEvent e) {
+    private void onRightClick(PlayerInteractEvent e) {
         if (!e.getAction().isRightClick()) return;
         callOnItemClass(e.getItem(), c -> c.onRightClick(e));
     }
 
     @EventHandler
-    public void onPlace(BlockPlaceEvent e) {
+    private void onPlace(BlockPlaceEvent e) {
         callOnItemClass(e.getItemInHand(), c -> c.onPlace(e));
     }
 
     @EventHandler
-    public void onAttack(EntityDamageEvent e) {
+    private void onAttack(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player p) {
             callOnItemClass(p.getEquipment(), c -> c.onTakeDamage(e));
         }
@@ -60,7 +60,7 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
 
     // allows for projectile hit event to register the entity
     @EventHandler
-    public void onPlayerLaunchProjectile(PlayerLaunchProjectileEvent e) {
+    private void onPlayerLaunchProjectile(PlayerLaunchProjectileEvent e) {
         String customItemName = e.getItemStack().getItemMeta().getPersistentDataContainer().get(CustomItemConstants.CUSTOM_ITEM_TYPE, PersistentDataType.STRING);
         if (customItemName == null) return;
         var customItemClass = itemsMap.get(customItemName);
@@ -69,19 +69,19 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
     }
 
     @EventHandler
-    public void onProjectileHit(ProjectileHitEvent e) {
+    private void onProjectileHit(ProjectileHitEvent e) {
         callOnItemClass(e.getEntity(), c -> c.onProjectileHitObject(e));
     }
 
     @EventHandler
-    public void onEntityHurt(EntityDamageByEntityEvent e) {
+    private void onEntityHurt(EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof Player player) {
             callOnItemClass(player.getEquipment().getItemInMainHand(), c-> c.onAttack(e));
         }
     }
 
     @EventHandler
-    public void onMove(PlayerMoveEvent e) {
+    private void onMove(PlayerMoveEvent e) {
         if (e.hasChangedBlock()) {
             callOnItemClass(e.getPlayer().getEquipment(), c -> c.onWalkOnNewBlockWhileWearing(e));
         }
@@ -99,18 +99,18 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
 
     private static final List<EquipmentSlot> ARMOR_SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
 
-    private void callOnItemClass (@NotNull EntityEquipment equipment, Consumer<CustomizedCustomItem> consumer) {
+    protected void callOnItemClass (@NotNull EntityEquipment equipment, Consumer<CustomizedCustomItem> consumer) {
         for (EquipmentSlot slot : ARMOR_SLOTS) {
             callOnItemClass(equipment.getItem(slot), consumer);
         }
     }
 
-    private void callOnItemClass (@Nullable ItemStack item, Consumer<CustomizedCustomItem> consumer) {
+    protected void callOnItemClass (@Nullable ItemStack item, Consumer<CustomizedCustomItem> consumer) {
         if (item == null || item.getItemMeta() == null) return;
         callOnItemClass(item.getItemMeta(), consumer);
     }
 
-    private void callOnItemClass (@NotNull PersistentDataHolder pdh, Consumer<CustomizedCustomItem> consumer) {
+    protected void callOnItemClass (@NotNull PersistentDataHolder pdh, Consumer<CustomizedCustomItem> consumer) {
         String customItemType = pdh.getPersistentDataContainer().get(CustomItemConstants.CUSTOM_ITEM_TYPE, PersistentDataType.STRING);
         if (customItemType == null) return;
         consumer.accept(itemsMap.get(customItemType));
