@@ -85,7 +85,7 @@ public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implem
     @EventHandler
     public void onEntityHurt(EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof Player player) {
-            callOnItemClass(player.getEquipment().getItemInMainHand(), c-> c.onAttack(e));
+            callOnItemClass(player.getEquipment().getItemInMainHand(), c -> c.onAttack(e));
         }
     }
 
