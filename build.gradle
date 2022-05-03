@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'maven-publish' // https://www.jetbrains.com/help/idea/add-a-gradle-library-to-the-maven-repository.html#publish
 }
 
 group = 'dev.u9g'
@@ -43,5 +44,16 @@ processResources {
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
         expand props
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'dev.u9g'
+            artifactId = rootProject.name
+            version = version
+            from components.java
+        }
     }
 }
