@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class CustomItemRegistry <CustomizedCustomItem extends CustomItem> implements Listener {
-    private final Map<String, CustomizedCustomItem> itemsMap = new HashMap<>();
+    protected final Map<String, CustomizedCustomItem> itemsMap = new HashMap<>();
     @SafeVarargs
     public CustomItemRegistry(Plugin plugin, CustomizedCustomItem... items) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
