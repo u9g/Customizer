@@ -1,0 +1,4 @@
+name: Customizer
+version: '${version}'
+main: dev.u9g.customizer.Customizer
+api-version: 1.18
